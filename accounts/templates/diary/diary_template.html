@@ -1,0 +1,248 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEN Schools - Homework Diary</title>
+    <style>
+        :root {
+            --primary-brown: #723E2A;
+            --secondary-blue: #1A305E;
+            --light-blue: #AED6F1;
+            --border-red: #8B0000;
+            --border-blue: #1A305E;
+            --bright-red: #681a1a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #d1d1d1;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .diary-page {
+            width: 210mm;
+            background-color: white;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 10px solid var(--border-blue);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .inner-border {
+            border: 6px solid var(--border-red);
+            padding: 25px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .school-info {
+            text-align: center;
+            flex: 1;
+        }
+
+        .school-info h1 {
+            margin: 2px 0;
+            font-size: 40px;
+            color: var(--bright-red);
+            font-weight: 900;
+        }
+
+        .logo-placeholder {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            background: #fff;
+        }
+
+        .logo-placeholder img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 50%;
+        }
+
+        .diary-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .icon-box {
+            width: 55px;
+            height: 55px;
+            background: var(--light-blue);
+            border: 2px solid #000;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 11px;
+            line-height: 1.1;
+        }
+
+        .diary-text h2 {
+            font-size: 30px;
+            color: var(--bright-red);
+            margin: 0;
+        }
+
+        .grade-display {
+            font-size: 26px;
+            color: var(--bright-red);
+            font-weight: bold;
+            margin: 10px 0 20px 0;
+            text-align: center;
+        }
+
+        .diary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .diary-table th {
+            background-color: var(--secondary-blue);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--secondary-blue);
+        }
+
+        .diary-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--primary-brown);
+            padding-top: 10px;
+            border-top: 2px solid var(--border-red);
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-image {
+            background: #e67e22;
+            color: white;
+        }
+
+        .hide-on-export {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Download Button -->
+    <div class="controls">
+        <button class="btn btn-image" onclick="saveAsImage()">Download as PNG</button>
+    </div>
+
+    <!-- Diary Content -->
+    <div class="diary-page" id="diary-container">
+        <div class="inner-border">
+            <div class="header">
+                <div class="logo-placeholder"><img src="{% static 'logo/paradigm_logo.jpg' %}" crossorigin="anonymous"></div>
+                <div class="school-info">
+                    <p><b>A PROJECT OF PARADIGM EDUCATIONAL NETWORK</b></p>
+                    <h1>PEN SCHOOLS</h1>
+                </div>
+                <div class="logo-placeholder"><img src="{% static 'logo/school_logo.jpg' %}" crossorigin="anonymous"></div>
+            </div>
+
+            <div class="diary-title-row">
+                <div class="icon-box"><span>HOME</span><span>WORK</span></div>
+                <div class="diary-text">
+                    <h2>HOMEWORK DIARY</h2>
+                </div>
+            </div>
+
+            <div class="grade-display">
+                GRADE {{ school_class.section }} ({{ diary_date }})
+            </div>
+
+            <table class="diary-table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Homework Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.name }}</td>
+                        <td>{{ subject.content }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="footer">
+                <div>📞 0330-1000081</div>
+                <div>☎️ 055-3730081</div>
+                <div>✉️ penschoolcroadcampus@gmail.com</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function saveAsImage() {
+            const container = document.getElementById('diary-container');
+
+            html2canvas(container, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: "#ffffff"
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'PEN-Diary-{{ school_class.name }}-{{ diary_date }}.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,295 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Charges | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f8f9fc;
+            --success-green: #27ae60;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navigation */
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 10px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 30px;
+        }
+        
+        .btn-back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Stats Cards */
+        .stat-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border-bottom: 4px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .stat-total { border-color: var(--brand-navy); }
+        .stat-paid { border-color: var(--success-green); }
+        .stat-pending { border-color: var(--brand-red); }
+
+        /* Form & Cards */
+        .card-custom {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .card-header-navy {
+            background: var(--brand-navy);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .form-label {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        /* Table Styling */
+        .table thead th {
+            background-color: #f1f4f9;
+            color: var(--brand-navy);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            border: none;
+            padding: 15px;
+        }
+
+        .inline-input {
+            width: 100px;
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .btn-update-sm {
+            background: var(--brand-navy);
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .btn-delete-sm {
+            background: #fff5f5;
+            color: var(--brand-red);
+            border: 1px solid #feb2b2;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ dashboard_url }}" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+        </a>
+        <span class="text-white small fw-bold">Paradigm Educational Network</span>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center">
+            <div class="p-2 rounded me-3 text-white fw-bold" style="background:var(--brand-navy)">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <h3 class="fw-bold m-0" style="color:var(--brand-navy)">Student Billing Center</h3>
+        </div>
+        
+        <form method="get" class="d-flex gap-2">
+            <input type="date" name="date_from" value="{{ date_from }}" class="form-control form-control-sm">
+            <input type="date" name="date_to" value="{{ date_to }}" class="form-control form-control-sm">
+            <button type="submit" class="btn btn-dark btn-sm px-3">Filter</button>
+        </form>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stat-box stat-total">
+                <small class="text-muted fw-bold">TOTAL CHARGED</small>
+                <div class="h3 fw-bold mb-0" style="color: var(--brand-navy);">{{ total_sum }}</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box stat-paid">
+                <small class="text-muted fw-bold">TOTAL PAID</small>
+                <div class="h3 fw-bold mb-0 text-success">{{ paid_sum }}</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box stat-pending">
+                <small class="text-muted fw-bold">TOTAL PENDING</small>
+                <div class="h3 fw-bold mb-0 text-danger">{{ pending_sum }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card-custom">
+                <div class="card-header-navy">
+                    <i class="fa-solid fa-plus-circle me-2"></i> Create New Charge
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Charge Title</label>
+                            {{ form.charge_name }}
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">School Class</label>
+                                <select id="id_school_class" name="school_class" class="form-select border-2">
+                                    <option value="">Select Class</option>
+                                    {% for c in form.school_class.field.queryset %}
+                                        <option value="{{ c.id }}">{{ c }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Assign Student</label>
+                                <select id="id_student" name="student" class="form-select border-2">
+                                    <option value="">Select Student</option>
+                                    {% for s in form.student.field.queryset %}
+                                        <option value="{{ s.id }}">{{ s.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Billing Date</label>
+                            {{ form.date }}
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Total Amount</label>
+                                {{ form.total_amount }}
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Paid Amount</label>
+                                {{ form.paid_amount }}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100 py-2 fw-bold mt-2">
+                            <i class="fa-solid fa-save me-1"></i> Add Charge Record
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card-custom">
+                <div class="card-header-navy">
+                    <i class="fa-solid fa-list-ul me-2"></i> Transaction Ledger
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date/Student</th>
+                                <th>Class/Charge</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center">Paid</th>
+                                <th class="text-center">Balance</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in charges %}
+                            <tr>
+                                <td class="ps-3">
+                                    <div class="fw-bold">{{ c.student.name }}</div>
+                                    <small class="text-muted">{{ c.date }}</small>
+                                </td>
+                                <td>
+                                    <div class="small fw-bold text-navy">{{ c.charge_name }}</div>
+                                    <span class="badge bg-light text-dark border">{{ c.school_class }}</span>
+                                </td>
+                                <form method="post" action="{% url 'update_student_charge' c.id %}">
+                                    {% csrf_token %}
+                                    <td class="text-center">
+                                        <input type="number" step="0.01" name="total_amount" value="{{ c.total_amount }}" class="inline-input text-center">
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="number" step="0.01" name="paid_amount" value="{{ c.paid_amount }}" class="inline-input text-center text-success fw-bold">
+                                    </td>
+                                    <td class="text-center fw-bold {% if c.balance > 0 %}text-danger{% else %}text-success{% endif %}">
+                                        {{ c.balance }}
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <button type="submit" class="btn-update-sm me-1"><i class="fa-solid fa-rotate"></i></button>
+                                        <a href="{% url 'delete_student_charge' c.id %}" class="btn-delete-sm" onclick="return confirm('Delete this charge?')">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    No charge records found for this period.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById("id_school_class").addEventListener("change", function () {
+    const classId = this.value;
+    fetch(`/ajax/students-by-class/?class_id=${classId}`)
+        .then(res => res.json())
+        .then(data => {
+            const studentSelect = document.getElementById("id_student");
+            studentSelect.innerHTML = '<option value="">Select Student</option>';
+            data.forEach(st => {
+                studentSelect.innerHTML += `<option value="${st.id}">${st.name}</option>`;
+            });
+        });
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Consistency | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f8f9fc;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Centered Analysis Card */
+        .analysis-card {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 5px solid var(--brand-red);
+        }
+
+        .card-header-navy {
+            background: var(--brand-navy);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .card-body {
+            padding: 40px;
+        }
+
+        /* Form Elements */
+        .date-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .date-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--brand-navy);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .input-custom {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: 0.3s;
+        }
+
+        .input-custom:focus {
+            border-color: var(--brand-red);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(213, 0, 50, 0.05);
+        }
+
+        .btn-calculate {
+            background: var(--brand-navy);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-calculate:hover {
+            background: var(--brand-red);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* Visual Connectors */
+        .date-connector {
+            text-align: center;
+            height: 20px;
+            position: relative;
+            margin-top: -15px;
+            margin-bottom: 10px;
+        }
+
+        .date-connector::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: #e2e8f0;
+        }
+
+        .info-note {
+            background: #fff5f5;
+            border-left: 3px solid var(--brand-red);
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #7c2d12;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container d-flex justify-content-center">
+    <div class="analysis-card">
+        <div class="card-header-navy">
+            <i class="fa-solid fa-chart-line fa-2x mb-3"></i>
+            <a href="{{ dashboard_url }}" class="btn-back-link">
+                <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+            </a>
+            <h4 class="fw-bold mb-1">Attendance Consistency</h4>
+            <p class="small opacity-75 mb-0">Select a period to analyze student reliability</p>
+        </div>
+
+        <div class="card-body">
+            <div class="info-note">
+                <i class="fa-solid fa-circle-info me-2"></i>
+                This report calculates the percentage of days attended versus total working days within the selected range.
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="attendance_step" value="1">
+
+                <div class="date-group">
+                    <label class="date-label"><i class="fa-solid fa-calendar-day me-2"></i>Analysis Start Date</label>
+                    <input type="date" name="from_date" class="input-custom" required>
+                </div>
+
+                <div class="date-connector"></div>
+
+                <div class="date-group">
+                    <label class="date-label"><i class="fa-solid fa-calendar-check me-2"></i>Analysis End Date</label>
+                    <input type="date" name="to_date" class="input-custom" required>
+                </div>
+
+                <button type="submit" class="btn-calculate">
+                    <i class="fa-solid fa-calculator me-2"></i> Generate Consistency Report
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'principal_dashboard' %}" class="text-decoration-none text-muted small fw-bold">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Return to Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <div class="bg-light py-2 text-center">
+            <small class="text-muted" style="font-size: 0.65rem;">© 2026 Paradigm Educational Network | SIS v2.0</small>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

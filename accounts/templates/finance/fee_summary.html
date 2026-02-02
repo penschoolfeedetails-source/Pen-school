@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Summary Report | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --brand-green: #198754;
+            --bg-gray: #f8f9fc;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* Navigation */
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 12px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 30px;
+        }
+
+        /* Summary KPI Cards */
+        .kpi-card {
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.2s;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover { transform: translateY(-5px); }
+
+        .kpi-icon {
+            font-size: 2rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+
+        /* Filter Panel */
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        /* Table Aesthetics */
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+            border: none;
+        }
+
+        .card-header-custom {
+            padding: 15px 25px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 12px 12px 0 0 !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .table thead th {
+            background: #f1f5f9;
+            color: var(--brand-navy);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 15px;
+            border: none;
+        }
+
+        .badge-pill {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ dashboard_url }}" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+        </a>
+        <span class="text-white fw-bold"><i class="fa-solid fa-chart-pie me-2"></i> FINANCIAL SUMMARY</span>
+        <span class="text-white-50 small">Paradigm Educational Network</span>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h2 class="fw-bold m-0" style="color:var(--brand-navy)">Financial Health Overview</h2>
+            <p class="text-muted">Consolidated report of receivables and collections.</p>
+        </div>
+    </div>
+
+    <div class="row mb-5 g-4">
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm border-start border-primary border-5">
+                <div class="card-body p-4 position-relative">
+                    <i class="fa-solid fa-file-invoice-dollar kpi-icon text-primary"></i>
+                    <h6 class="text-muted fw-bold small text-uppercase">Total Estimated</h6>
+                    <h2 class="fw-black text-primary mb-0">Rs {{ total_estimated }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm border-start border-success border-5">
+                <div class="card-body p-4 position-relative">
+                    <i class="fa-solid fa-hand-holding-dollar kpi-icon text-success"></i>
+                    <h6 class="text-muted fw-bold small text-uppercase">Total Collected</h6>
+                    <h2 class="fw-black text-success mb-0">Rs {{ total_collected }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm border-start border-danger border-5">
+                <div class="card-body p-4 position-relative">
+                    <i class="fa-solid fa-circle-exclamation kpi-icon text-danger"></i>
+                    <h6 class="text-muted fw-bold small text-uppercase">Total Pending</h6>
+                    <h2 class="fw-black text-danger mb-0">Rs {{ total_pending }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="small fw-bold text-navy mb-1 text-uppercase">Class</label>
+                <select name="class" class="form-select border-2">
+                    <option value="">All Classes</option>
+                    {% for cls in classes %}
+                    <option value="{{ cls.id }}">{{ cls }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="small fw-bold text-navy mb-1 text-uppercase">Month</label>
+                <select name="month" class="form-select border-2">
+                    <option value="">All Months</option>
+                    {% for m in months %}
+                    <option value="{{ m.0 }}">{{ m.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="small fw-bold text-navy mb-1 text-uppercase">Year</label>
+                <input type="number" name="year" class="form-control border-2" placeholder="e.g. 2026">
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100 fw-bold py-2" style="background: var(--brand-navy); border:none;">
+                    <i class="fa-solid fa-filter me-2"></i> Update Report
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-header-custom bg-success text-white">
+            <i class="fa-solid fa-circle-check me-2"></i> Verified Collections
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Student</th>
+                        <th>Class</th>
+                        <th class="text-center">Period</th>
+                        <th class="text-center">Monthly Fee</th>
+                        <th class="text-center">Paid Amount</th>
+                        <th class="pe-4 text-end">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in paid_fees %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-navy">{{ fee.student.name }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ fee.student.school_class }}</span></td>
+                        <td class="text-center text-muted small">{{ fee.get_month_display }} {{ fee.year }}</td>
+                        <td class="text-center">{{ fee.student.total_fee }}</td>
+                        <td class="text-center text-success fw-bold">{{ fee.amount_paid }}</td>
+                        <td class="pe-4 text-end">
+                            <span class="badge badge-pill bg-success">PAID</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center py-5 text-muted">No verified payments in this selection.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-header-custom bg-danger text-white">
+            <i class="fa-solid fa-clock-rotate-left me-2"></i> Outstanding Dues
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Student</th>
+                        <th>Class</th>
+                        <th class="text-center">Period</th>
+                        <th class="text-center">Monthly Fee</th>
+                        <th class="text-center">Paid</th>
+                        <th class="text-center">Shortfall</th>
+                        <th class="pe-4 text-end">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in pending_fees %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-navy">{{ item.fee.student.name }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ item.fee.student.school_class }}</span></td>
+                        <td class="text-center text-muted small">{{ item.fee.get_month_display }} {{ item.fee.year }}</td>
+                        <td class="text-center">{{ item.fee.student.total_fee }}</td>
+                        <td class="text-center">{{ item.fee.amount_paid }}</td>
+                        <td class="text-center text-danger fw-black">{{ item.pending }}</td>
+                        <td class="pe-4 text-end">
+                            <span class="badge badge-pill bg-warning text-dark">PENDING</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center py-5 text-muted">No pending dues found for this selection.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <a href="{% url 'principal_dashboard' %}" class="btn btn-outline-secondary fw-bold">
+            <i class="fa-solid fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+        <p class="text-muted small m-0">© 2026 Paradigm Educational Network | System Generated Report</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

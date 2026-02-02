@@ -1,0 +1,407 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Report Card - {{ student.name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset and Print Settings */
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            background: #555;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            font-size: 12px;
+        }
+
+        /* Button Styling */
+        .no-print {
+            text-align: center;
+            padding: 20px;
+            background: #333;
+        }
+
+        .download-btn {
+            background-color: #c00000;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        .download-btn:hover {
+            background-color: #e60000;
+            transform: translateY(-2px);
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 1mm;
+            margin: 10px auto;
+            background: white;
+            position: relative;
+            overflow: hidden;
+            border: 8px solid #1c064c;
+            page-break-after: always;
+        }
+
+        .inner-border {
+            border: 6px solid #7c1f1f;
+            height: 100%;
+            min-height: 285mm;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .side-logo img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+        }
+
+        .center-header {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 30px;
+            font-weight: bold;
+            color: #c00000;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .sub-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .miz-colleges {
+            font-weight: bold;
+            font-size: 18px;
+            margin: 5px 0;
+            color: #000;
+        }
+
+        .contacts {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .email {
+            font-size: 13px;
+            color: rgb(13, 17, 133);
+            text-decoration: underline;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .banner {
+            background: #631007;
+            color: white;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #1c4e80;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin: 15px 0;
+            color: #c00a0a;
+            font-weight: bold;
+            font-size: 18px;
+            row-gap: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        th, td {
+            border: 1.5px solid black;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .summary-table th {
+            background: #2e468d !important;
+            font-size: 13px;
+            font-weight: bold;
+            color: white !important;
+        }
+
+        .dossier-table thead th {
+            background: #2e468d !important;
+            color: white !important;
+            font-size: 13px;
+        }
+
+        /* Styled Checkboxes for the Report Card */
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #000;
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            vertical-align: middle;
+            background: #fff;
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: #c00000;
+            border-color: #000;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✔';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .sig-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+            padding: 0 10px 30px 10px;
+            width: 100%;
+        }
+
+        .sig-item { text-align: center; width: 200px; }
+        .sig-underline { border-top: 1.5px solid black; margin-bottom: 5px; width: 100%; }
+        .sig-text { font-weight: bold; font-size: 13px; margin: 0; }
+
+        .marks-table thead th {
+            background: #2e468d !important;
+            height: 35px;
+            color: white !important;
+        }
+
+        .remark-text {
+            color: #940a0a;
+            font-style: italic;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 6px;
+        }
+
+        .teacher-remarks-box {
+            border: 1.5px solid black;
+            margin-top: 20px;
+            display: flex;
+            height: 60px;
+        }
+
+        .remarks-label {
+            border-right: 1.5px solid black;
+            padding: 8px;
+            font-size: 11px;
+            color: #941d08;
+            width: 150px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        @media print {
+            body { background: none; }
+            .no-print { display: none; }
+            .page { margin: 0; box-shadow: none; border: 8px solid #1c064c !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="no-print">
+        <button class="download-btn" onclick="window.print()">Download Report Card (PDF)</button>
+    </div>
+
+    <div class="page">
+        <div class="inner-border">
+            <div class="header-container">
+                <div class="side-logo"><img src="{% static 'logo/paradigm_logo.jpg' %}" alt="Logo"></div>
+                <div class="center-header">
+                    <h1 class="main-title">PEN SCHOOLS DC ROAD CAMPUS</h1>
+                    <p class="miz-colleges">A Project of Meezan Groups of Colleges</p>
+                </div>
+                <div class="side-logo"><img src="{% static 'logo/school_logo.jpg' %}" alt="Logo"></div>
+            </div>
+
+            <div class="sub-header">
+                <p class="contacts">0300-6492628, 0330-1000081, 055-3730081</p>
+                <a href="#" class="email">penschooldcroadcampus@gmail.com</a>
+                <div class="banner">{{ term.name }}</div>
+            </div>
+
+            <div class="info-grid">
+                <div>ROLL NO: {{ student.roll_no }}</div>
+                <div>GRADE: {{ student.school_class.section }}</div>
+                <div>STUDENT NAME: {{ student.name }}</div>
+                <div>FATHER NAME: {{ student.father_name }}</div>
+            </div>
+
+            <table class="summary-table">
+                <tr>
+                    <th style="width: 20%;">GRADE</th>
+                    <th style="width: 25%;">PERCENTAGE</th>
+                    <th style="width: 55%;">REMARKS</th>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold; font-size:18px;">{{ grade }}</td>
+                    <td style="font-weight:bold; font-size:18px;">{{ percentage }}%</td>
+                    <td style="font-size:14px;">Excellent Performance</td>
+                </tr>
+            </table>
+
+            <table class="dossier-table">
+                <thead>
+                    <tr>
+                        <th>ATTRIBUTE</th>
+                        <th>EXCELLENT</th>
+                        <th>GOOD</th>
+                        <th>SATISFACTORY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attribute in personal_attributes %}
+                    <tr>
+                        <td style="text-align:left; padding-left:15px; font-weight:bold;">{{ attribute.name }}</td>
+                        <td>
+                            <input type="checkbox" class="row-check" data-row="{{ forloop.counter }}" name="attr_{{ forloop.counter }}_exc" {% if attribute.excellent %}checked{% endif %}>
+                        </td>
+                        <td>
+                            <input type="checkbox" class="row-check" data-row="{{ forloop.counter }}" name="attr_{{ forloop.counter }}_good" {% if attribute.good %}checked{% endif %}>
+                        </td>
+                        <td>
+                            <input type="checkbox" class="row-check" data-row="{{ forloop.counter }}" name="attr_{{ forloop.counter }}_sat" {% if attribute.satisfactory %}checked{% endif %}>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="sig-container">
+                <div class="sig-item"><div class="sig-underline"></div><p class="sig-text" style="color:#c00000;">Principal's Signature</p></div>
+                <div class="sig-item"><div class="sig-underline"></div><p class="sig-text" style="color:#2e75b6;">Teacher's Signature</p></div>
+                <div class="sig-item"><div class="sig-underline"></div><p class="sig-text" style="color:#385723;">Parent's Signature</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="inner-border">
+            <table class="marks-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">SR#</th>
+                        <th style="width: 40%;">SUBJECTS</th>
+                        <th style="width: 15%;">TOTAL</th>
+                        <th style="width: 20%;">OBTAINED</th>
+                        <th style="width: 15%;">%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in subjects_with_marks %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td style="text-align:left; padding-left:15px; font-weight:bold;">{{ item.subject.name }}</td>
+                        <td>{{ item.total_marks }}</td>
+                        <td>{{ item.obtained_marks }}</td>
+                        <td>{{ item.percentage }}%</td>
+                    </tr>
+                    <tr><td colspan="5" class="remark-text">{{ item.remark }}</td></tr>
+                    {% endfor %}
+                    <tr style="background:#d9d9d9; font-weight:bold; font-size:14px;">
+                        <td colspan="2">GRAND TOTAL</td>
+                        <td>{{ total_marks }}</td>
+                        <td>{{ obtained_marks }}</td>
+                        <td>{{ percentage }}%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="summary-table" style="margin-top: 30px;">
+                <tr>
+                    <th style="width: 25%; color:red; background:white !important;">GRADE</th>
+                    <th style="width: 25%; background:white !important; color:black;">PERCENTAGE</th>
+                    <th style="width: 50%; background:white !important; color:#2e75b6;">REMARKS</th>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold; font-size:20px;">{{ grade }}</td>
+                    <td style="font-weight:bold; font-size:20px;">{{ percentage }}%</td>
+                    <td style="font-size:16px;">Excellent</td>
+                </tr>
+            </table>
+
+            <div class="teacher-remarks-box">
+                <div class="remarks-label">PRINCIPAL'S REMARKS</div>
+                <div style="flex-grow: 1;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ensures only one checkbox is selected per attribute row
+        document.querySelectorAll('.row-check').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    const rowId = this.getAttribute('data-row');
+                    document.querySelectorAll(`.row-check[data-row="${rowId}"]`).forEach(cb => {
+                        if (cb !== this) cb.checked = false;
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

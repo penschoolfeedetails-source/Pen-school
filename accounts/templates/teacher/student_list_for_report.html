@@ -1,0 +1,239 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    :root {
+        --pen-blue: #1a237e;
+        --pen-red: #d32f2f;
+        --pen-light-bg: #f8f9ff;
+    }
+
+    .admin-wrapper {
+        max-width: 1000px;
+        margin: 30px auto;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        padding: 0 15px;
+    }
+
+    /* Branded Header Section */
+    .admin-header {
+        border-left: 8px solid var(--pen-red);
+        padding-left: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .admin-header h2 {
+        color: var(--pen-blue);
+        font-weight: 900;
+        font-size: 2.2rem;
+        text-transform: uppercase;
+        margin: 0;
+    }
+
+    /* Action Buttons Area */
+    .action-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .btn-pen {
+        font-weight: 800;
+        border-radius: 10px;
+        padding: 12px 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        text-decoration: none !important;
+        border: none;
+    }
+
+    .btn-pen-red {
+        background-color: var(--pen-red);
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+    }
+
+    .btn-pen-blue {
+        background-color: var(--pen-blue);
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);
+    }
+
+    .btn-pen:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+        color: white;
+    }
+
+    /* --- DATA TABLE DESIGN --- */
+    .table-container {
+        background: white;
+        border: 3px solid var(--pen-blue);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .pen-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .pen-table thead {
+        background-color: var(--pen-blue);
+        color: white;
+        border-bottom: 5px solid var(--pen-red);
+    }
+
+    .pen-table th {
+        padding: 18px;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-align: left;
+    }
+
+    .pen-table td {
+        padding: 15px 18px;
+        border-bottom: 1px solid #eee;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .pen-table tbody tr:hover {
+        background-color: var(--pen-light-bg);
+    }
+
+    /* View Button in Table */
+    .btn-view-sm {
+        background-color: var(--pen-blue);
+        color: white !important;
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Footer Navigation */
+    .nav-footer {
+        margin-top: 30px;
+    }
+
+    .back-link {
+        color: var(--pen-blue);
+        font-weight: 800;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .back-link:hover {
+        color: var(--pen-red);
+    }
+
+    /* Mobile Adjustments */
+    @media (max-width: 768px) {
+        .admin-header h2 {
+            font-size: 1.6rem;
+        }
+
+        .pen-table th,
+        .pen-table td {
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+
+        .btn-pen {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="admin-wrapper">
+    <div class="admin-header">
+        <h2>Students: {{ term.name }}</h2>
+    </div>
+    <a href="{{ dashboard_url }}" class="btn-back-link">
+        <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+    </a>
+
+    <div class="action-bar">
+        <a href="{% url 'add_extra_curricular_item' class_id=class_id term_id=term.id %}" class="btn-pen btn-pen-red">
+            <i class="fa-solid fa-plus-circle"></i> Add Extra Curricular Item
+        </a>
+
+    </div>
+
+    <div class="table-container" style="margin-bottom:25px;">
+    <table class="pen-table">
+        <thead>
+            <tr>
+                <th>Marked Subjects</th>
+                <th>Pending Subjects</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    {% for subject in marked_subjects %}
+                        <span style="color:green;font-weight:800;">✔ {{ subject.name }}</span><br>
+                    {% empty %}
+                        <span style="color:#999;">No subjects marked yet</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for subject in unmarked_subjects %}
+                        <span style="color:red;font-weight:800;">✖ {{ subject.name }}</span><br>
+                    {% empty %}
+                        <span style="color:#999;">All subjects completed</span>
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+    <div class="table-container">
+        <table class="pen-table">
+            <thead>
+                <tr>
+                    <th><i class="fa-solid fa-hashtag me-2"></i> Roll No</th>
+                    <th><i class="fa-solid fa-user me-2"></i> Student Name</th>
+                    <th><i class="fa-solid fa-gears me-2"></i> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.roll_no }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>
+                        <a href="{% url 'report_card' student.id term.id %}" class="btn-pen btn-view-sm">
+                            <i class="fa-regular fa-eye"></i> View Report
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="nav-footer">
+        <a href="{% url 'teacher_dashboard' %}" class="back-link">
+            <i class="fa-solid fa-chevron-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Marks Entry | Paradigm Network</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #002d72;
+            --primary-red: #d50032;
+            --bg-light: #f4f7fa;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding-bottom: 100px;
+        }
+
+        .glass-header {
+            background: #fff;
+            padding: 1.2rem 0;
+            border-bottom: 4px solid var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .brand-name {
+            font-weight: 900;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Step Card */
+        .setup-card {
+            background: white;
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-label {
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Styled Select Boxes */
+        .form-select-lg {
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d3436;
+            transition: 0.3s;
+            background-color: #f9fbff;
+        }
+
+        .form-select-lg:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(0, 45, 114, 0.1);
+            outline: none;
+        }
+
+        /* Section Indicator */
+        .selection-summary {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary-red);
+        }
+
+        /* Custom Button */
+        .btn-proceed {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .btn-proceed:hover {
+            background: var(--primary-red);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(213, 0, 50, 0.3);
+            color: white;
+        }
+
+        .step-badge {
+            background: var(--primary-red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="glass-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="{{ dashboard_url }}" class="btn-back-link">
+                <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+            </a>
+            <div class="brand-name">Paradigm <span class="text-danger">Network</span></div>
+            <span class="step-badge">Step 2: Configuration</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="setup-card">
+            <div class="text-center mb-4">
+                <div class="mb-3">
+                    <i class="fa-solid fa-sliders fa-3x text-danger opacity-25"></i>
+                </div>
+                <h3 class="fw-bold">Exam Details</h3>
+                <p class="text-muted">Select the subject and examination term.</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="selection-summary">
+                    <small class="text-muted d-block">Selected Class:</small>
+                    <span class="fw-bold text-dark"><i class="fa-solid fa-school me-2"></i> Grade {{
+                        selected_class.section }} - {{ selected_class.name }}</span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fa-solid fa-book-open"></i> Select Subject
+                    </label>
+                    <select name="subject_id" class="form-select form-select-lg" required>
+                        <option value="" disabled selected>Choose Subject...</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}">{{ subject.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label">
+                        <i class="fa-solid fa-calendar-check"></i> Examination Term
+                    </label>
+                    <select name="term_id" class="form-select form-select-lg" required>
+                        {% if current_term %}
+                        <option value="{{ current_term.id }}" selected>
+                            {{ current_term.name }} (Active Term)
+                        </option>
+                        {% endif %}
+
+                        {% for term in other_terms %}
+                        <option value="{{ term.id }}">{{ term.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    <button type="submit" class="btn btn-proceed">
+                        Start Marks Entry <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                    <a href="javascript:history.back()"
+                        class="text-center text-muted text-decoration-none small fw-bold">
+                        <i class="fa-solid fa-chevron-left me-1"></i> Change Class
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

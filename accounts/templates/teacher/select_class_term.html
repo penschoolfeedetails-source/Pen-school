@@ -1,0 +1,176 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    :root {
+        --pen-blue: #1a237e;
+        --pen-red: #d32f2f;
+        --pen-bg: #ffffff;
+    }
+
+    .setup-wrapper {
+        max-width: 900px;
+        margin: 40px auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 0 15px;
+    }
+
+    /* --- BRANDED HEADER --- */
+    .setup-header {
+        border-left: 8px solid var(--pen-red);
+        padding-left: 20px;
+        margin-bottom: 35px;
+    }
+
+    .setup-header h2 {
+        color: var(--pen-blue);
+        font-weight: 900;
+        font-size: 2.2rem;
+        text-transform: uppercase;
+        margin: 0;
+    }
+
+    .setup-header p {
+        color: #666;
+        margin: 5px 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    /* --- FORM CARD --- */
+    .selection-card {
+        background: #fff;
+        border: 2px solid var(--pen-blue);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    /* --- STEP STYLING --- */
+    .step-container {
+        margin-bottom: 25px;
+    }
+
+    .step-badge {
+        background-color: var(--pen-blue);
+        color: white;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 800;
+        margin-right: 12px;
+    }
+
+    .bold-label {
+        font-weight: 800;
+        color: #000;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    /* --- INPUT STYLING --- */
+    .heavy-select {
+        border: 3px solid var(--pen-blue) !important;
+        border-radius: 12px !important;
+        height: 60px !important;
+        font-weight: 700 !important;
+        padding-left: 20px !important;
+        color: var(--pen-blue) !important;
+        background-color: #fcfcff !important;
+        transition: all 0.3s ease;
+    }
+
+    .heavy-select:focus {
+        border-color: var(--pen-red) !important;
+        box-shadow: 0 0 0 0.25rem rgba(211, 47, 47, 0.1) !important;
+    }
+
+    /* --- BUTTON STYLING --- */
+    .btn-continue {
+        background-color: var(--pen-red);
+        color: white;
+        font-weight: 900;
+        height: 60px;
+        border: none;
+        border-radius: 12px;
+        width: 100%;
+        font-size: 1.25rem;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        box-shadow: 0 8px 20px rgba(211, 47, 47, 0.3);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin-top: 10px;
+    }
+
+    .btn-continue:hover {
+        background-color: var(--pen-blue);
+        transform: translateY(-3px);
+        color: white;
+    }
+
+    /* Responsive Mobile Tweak */
+    @media (max-width: 768px) {
+        .setup-header h2 {
+            font-size: 1.7rem;
+        }
+
+        .selection-card {
+            padding: 20px;
+        }
+
+        .heavy-select,
+        .btn-continue {
+            height: 55px;
+        }
+    }
+</style>
+
+<div class="setup-wrapper">
+    <div class="setup-header">
+        <p>Set the class and term to proceed</p>
+    </div>
+
+    <div class="selection-card">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-6 step-container">
+                    <label class="bold-label">
+                        <span class="step-badge">1</span> Class Selection
+                    </label>
+                    <select name="class" class="form-select heavy-select" required>
+                        <option value="" selected disabled>Choose Class...</option>
+                        {% for c in classes %}
+                        <option value="{{ c.id }}">{{ c.name }} {{ c.section }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6 step-container">
+                    <label class="bold-label">
+                        <span class="step-badge">2</span> Term Selection
+                    </label>
+                    <select name="term" class="form-select heavy-select" required>
+                        <option value="" selected disabled>Choose Term...</option>
+                        {% for t in terms %}
+                        <option value="{{ t.id }}">{{ t.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-continue">
+                        CONTINUE<i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marks Entry Status | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f8f9fc;
+            --success-green: #28a745;
+            --warning-amber: #ffc107;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navigation Styling */
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 10px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 30px;
+        }
+        
+        .btn-back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        
+        .btn-back-link:hover {
+            color: #ffcbd1;
+        }
+
+        /* Filter Card */
+        .filter-card {
+            background: white;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--brand-navy);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .btn-filter {
+            background-color: var(--brand-navy);
+            color: white;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-filter:hover {
+            background-color: #0d1a35;
+            color: white;
+        }
+
+        /* Table Design */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .table thead {
+            background-color: var(--brand-navy);
+            color: white;
+        }
+
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 15px;
+            border: none;
+        }
+
+        .table td {
+            padding: 15px;
+            color: #444;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        /* Status Badges */
+        /* Note: These classes should be included in your 'table_rows' HTML generation */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .badge-completed { background: #e6fffa; color: #234e52; border: 1px solid #b2f5ea; }
+        .badge-pending { background: #fffaf0; color: #7b341e; border: 1px solid #feebc8; }
+
+        .class-tag {
+            font-weight: 700;
+            color: var(--brand-navy);
+        }
+
+        .subject-text {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ dashboard_url }}" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+        </a>
+        <span class="text-white small fw-bold d-none d-sm-inline">Paradigm Educational Network</span>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            
+            <div class="d-flex align-items-center mb-4">
+                <div class="p-2 rounded me-3 text-white fw-bold" style="background:var(--brand-red)">STATUS</div>
+                <h3 class="fw-bold m-0" style="color:var(--brand-navy)">📘 Marks Entry Tracking</h3>
+            </div>
+
+            <div class="filter-card">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Filter by Class</label>
+                        <select name="class" class="form-select border-2">
+                            {{ class_options|safe }}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Examination Term</label>
+                        <select name="term" class="form-select border-2">
+                            {{ term_options|safe }}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-filter w-100 py-2">
+                            <i class="fa-solid fa-sliders me-2"></i> Apply Filters
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-container mb-5">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Class</th>
+                                <th>Term</th>
+                                <th>Subject</th>
+                                <th class="text-center">Submission Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ table_rows|safe }}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-4 mb-5">
+                <small class="text-muted">
+                    <i class="fa-solid fa-circle text-success me-1"></i> Completed: Marks fully entered
+                </small>
+                <small class="text-muted">
+                    <i class="fa-solid fa-circle text-warning me-1"></i> Pending: Marks entry in progress/not started
+                </small>
+            </div>
+
+            <p class="text-center text-muted small pb-4">
+                © 2026 Paradigm Educational Network | Administrative Audit View
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

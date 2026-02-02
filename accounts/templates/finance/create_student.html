@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enroll New Student | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f8f9fc;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navigation */
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 10px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 30px;
+        }
+        
+        .btn-back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Enrollment Studio Layout */
+        .studio-card {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 40px;
+            border-right: 1px solid #edf2f7;
+        }
+
+        .preview-section {
+            background: #f1f4f9;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Form Styling */
+        .form-label-custom {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--brand-navy);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--brand-red);
+            outline: none;
+        }
+
+        /* Button Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-pen {
+            padding: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-add { background: var(--brand-navy); color: white; }
+        .btn-email { background: var(--brand-red); color: white; }
+        .btn-pdf { background: #4a5568; color: white; grid-column: span 2; }
+
+        .btn-pen:hover { transform: translateY(-2px); opacity: 0.9; color: white; }
+
+        /* Card Preview (Preserved & Enhanced) */
+        .card-preview {
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            position: relative;
+            text-align: center;
+            overflow: hidden;
+            transform: scale(0.9); /* Scaled for laptop screens */
+        }
+
+        .side-accent {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 8px;
+            background: var(--brand-red);
+        }
+
+        .logo-area {
+            position: absolute;
+            top: 30px;
+            width: 100%;
+        }
+
+        .school-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: var(--brand-navy);
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .campus-tag {
+            color: var(--brand-red);
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .welcome-script {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            color: var(--brand-red);
+            margin-top: 80px;
+        }
+
+        .sub-text {
+            font-size: 0.9rem;
+            color: #777;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            background: var(--brand-navy);
+            color: white;
+            padding: 25px;
+            width: 100%;
+            transform: skewY(-3deg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            bottom: 40px;
+        }
+
+        .info-content { transform: skewY(3deg); }
+
+        #display-name {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        #display-grade {
+            font-size: 1rem;
+            color: #fdbb2d;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="text-white small fw-bold">Paradigm Educational Network</span>
+    </div>
+    <a href="{{ dashboard_url }}" class="btn-back-link">
+        <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+    </a>
+</nav>
+
+<div class="container">
+    <div class="studio-card row g-0">
+        
+        <div class="col-lg-7 form-section">
+            <h3 class="fw-bold mb-4" style="color:var(--brand-navy)">Student Enrollment</h3>
+            
+            <form method="post" id="add-student-form">
+                {% csrf_token %}
+                
+                <div class="row">
+                    {% for field in form %}
+                    <div class="col-md-12">
+                        <label class="form-label-custom">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small mb-2">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="action-grid mt-2">
+                    <button type="submit" class="btn-pen btn-add">
+                        <i class="fa-solid fa-user-plus me-2"></i> Register Student
+                    </button>
+                    <button type="button" class="btn-pen btn-email" id="sendEmailBtn">
+                        <i class="fa-solid fa-paper-plane me-2"></i> Welcome Email
+                    </button>
+                    <button type="button" class="btn-pen btn-pdf" id="downloadPdfBtn">
+                        <i class="fa-solid fa-file-pdf me-2"></i> Download Digital Welcome Card
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-5 preview-section">
+            <h6 class="text-muted fw-bold mb-3 text-uppercase small">Live Preview</h6>
+            
+            <div class="card-preview" id="capture-area">
+                <div class="side-accent"></div>
+
+                <div class="logo-area">
+                    <h2 class="school-name">PEN SCHOOLS</h2>
+                    <div class="campus-tag">DC ROAD CAMPUS</div>
+                </div>
+
+                <div class="welcome-script">Welcome</div>
+                <div class="sub-text">TO OUR SCHOOL</div>
+
+                <div class="info-box">
+                    <div class="info-content">
+                        <h1 id="display-name">STUDENT NAME</h1>
+                        <div id="display-grade">Grade: Select Class</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-3 text-center text-muted small px-4">
+                <i class="fa-solid fa-circle-info me-1"></i> The welcome card is automatically generated and can be sent to the parent's email.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    // Elements
+    const nameInput = document.getElementById('id_name');
+    const gradeInput = document.getElementById('id_school_class');
+    const emailInput = document.getElementById('id_email');
+    const displayName = document.getElementById('display-name');
+    const displayGrade = document.getElementById('display-grade');
+
+    // Live Update Logic
+    function updateCard() {
+        displayName.innerText = nameInput.value ? nameInput.value.toUpperCase() : 'STUDENT NAME';
+        const gradeText = gradeInput.options[gradeInput.selectedIndex]?.text;
+        displayGrade.innerText = gradeText && gradeInput.value ? '' + gradeText : 'Grade: N/A';
+    }
+
+    nameInput.addEventListener('input', updateCard);
+    gradeInput.addEventListener('change', updateCard);
+
+    // Send Email Logic
+    document.getElementById('sendEmailBtn').addEventListener('click', async () => {
+        if (!emailInput.value) { alert('Please provide a parent email first.'); return; }
+        const card = document.getElementById('capture-area');
+        try {
+            const canvas = await html2canvas(card, { scale: 2 });
+            const imageData = canvas.toDataURL('image/png');
+            const response = await fetch("{% url 'send_welcome_email' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({
+                    name: nameInput.value,
+                    grade: gradeInput.options[gradeInput.selectedIndex]?.text,
+                    email: emailInput.value,
+                    image: imageData
+                })
+            });
+            const data = await response.json();
+            alert(data.message);
+        } catch (error) { alert("Failed to send email."); }
+    });
+
+    // PDF Download Logic
+    document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+        const card = document.getElementById('capture-area');
+        html2canvas(card, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
+            });
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save(`${nameInput.value || 'Student'}_Welcome_Card.pdf`);
+        });
+    });
+</script>
+
+</body>
+</html>

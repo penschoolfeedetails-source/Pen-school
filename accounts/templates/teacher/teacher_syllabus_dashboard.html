@@ -1,0 +1,197 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    :root {
+        --pen-blue: #1a237e;
+        --pen-red: #d32f2f;
+        --pen-bg: #ffffff;
+        --pen-light-blue: #f0f2f9;
+        /* Background for the topics */
+    }
+
+    .syllabus-wrapper {
+        max-width: 1000px;
+        margin: 20px auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* --- TERM CARD CONTAINER --- */
+    .term-container {
+        border: 2px solid var(--pen-blue);
+        border-radius: 12px;
+        margin-top: 30px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Navy Header with Red Accent Line */
+    .term-header {
+        background-color: var(--pen-blue);
+        color: white;
+        padding: 15px 20px;
+        font-weight: 800;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+        border-bottom: 6px solid var(--pen-red);
+        /* The thick red line from your image */
+    }
+
+    .term-header i {
+        font-size: 1.2rem;
+    }
+
+    /* --- TOPICS SECTION --- */
+    .topic-list {
+        padding: 20px;
+    }
+
+    .topic-item {
+        background: var(--pen-light-blue);
+        border: 1px solid #d1d9e6;
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        transition: transform 0.2s ease;
+    }
+
+    .topic-item:last-child {
+        margin-bottom: 0;
+    }
+
+    /* The Red Circular Number */
+    .topic-index {
+        background-color: var(--pen-red);
+        color: white;
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 800;
+        margin-right: 18px;
+        font-size: 0.95rem;
+    }
+
+    /* Topic Text Visibility */
+    .topic-text {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #111;
+        letter-spacing: 0.2px;
+    }
+
+    /* --- SELECTION CONTROLS --- */
+    .step-badge {
+        background-color: var(--pen-blue);
+        color: white;
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    .form-label {
+        font-weight: 800;
+        color: #000;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .custom-select {
+        border: 2px solid var(--pen-blue) !important;
+        border-radius: 12px !important;
+        height: 55px !important;
+        font-weight: 700 !important;
+        color: var(--pen-blue) !important;
+    }
+
+    .btn-show-syllabus {
+        background-color: var(--pen-red);
+        color: white;
+        font-weight: 800;
+        height: 55px;
+        border: none;
+        border-radius: 12px;
+        width: 100%;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    }
+
+    .subject-header-title {
+        color: var(--pen-blue);
+        font-weight: 800;
+        font-size: 1.8rem;
+        margin-top: 40px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .topic-text {
+            font-size: 1rem;
+        }
+
+        .term-header {
+            font-size: 1.2rem;
+        }
+    }
+</style>
+
+<div class="container syllabus-wrapper">
+    <div style="border-left: 8px solid var(--pen-red); padding-left: 15px; margin-bottom: 30px;">
+        <a href="{{ dashboard_url }}" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+        </a>
+        <h1 style="color: var(--pen-blue); font-weight: 900; margin: 0; font-size: 2.5rem;">ACADEMIC SYLLABUS</h1>
+        <p style="color: #666; margin: 0;">Discover your academic journey</p>
+    </div>
+
+    <form method="get">
+        <div class="row g-3 align-items-end">
+            <div class="col-12 col-md-4">
+                <label class="form-label"><span class="step-badge">1</span> Select Class</label>
+                <select name="class" class="form-select custom-select" onchange="this.form.submit()">
+                    {{ class_options_html|safe }}
+                </select>
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label"><span class="step-badge">2</span> Select Subject</label>
+                <select name="subject" class="form-select custom-select" {% if not selected_class %}disabled{% endif %}>
+                    {{ subject_options_html|safe }}
+                </select>
+            </div>
+            <div class="col-12 col-md-4">
+                <button type="submit" class="btn btn-show-syllabus">
+                    <i class="fa-regular fa-eye me-2"></i> VIEW SYLLABUS
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="mt-2">
+        {% if selected_subject and request.GET.subject %}
+        <h2 class="subject-header-title">
+            <i class="fa-solid fa-book-open text-danger"></i>
+            {{ selected_subject.name }} Syllabus
+        </h2>
+
+        <div class="syllabus-render">
+            {{ terms_with_topics_html|safe }}
+        </div>
+        {% endif %}
+    </div>
+</div>

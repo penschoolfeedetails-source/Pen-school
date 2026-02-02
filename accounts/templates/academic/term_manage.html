@@ -1,0 +1,274 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Term Management | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f8f9fc;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navigation Styling */
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 10px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 30px;
+        }
+        
+        .btn-back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        /* Form Card */
+        .management-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background: var(--brand-navy);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .form-label {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        .btn-save {
+            background-color: var(--brand-red);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-save:hover {
+            background-color: #b3002a;
+            color: white;
+        }
+
+        /* Table Styling */
+        .term-table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .table thead {
+            background-color: #f1f4f9;
+        }
+
+        .table th {
+            color: var(--brand-navy);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            padding: 15px;
+            border: none;
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        /* Status Toggles */
+        .badge-current {
+            background-color: #e6fffa;
+            color: #234e52;
+            border: 1px solid #b2f5ea;
+            font-weight: 700;
+        }
+
+        .btn-toggle-active {
+            background-color: #28a745;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .btn-toggle-inactive {
+            background-color: #6c757d;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .btn-delete {
+            background-color: #fff5f5;
+            color: #e53e3e;
+            border: 1px solid #feb2b2;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .btn-delete:hover {
+            background-color: #e53e3e;
+            color: white;
+        }
+
+        .date-range-icon {
+            color: #a0aec0;
+            margin: 0 8px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{% url 'principal_dashboard' %}" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i> BACK TO DASHBOARD
+        </a>
+        <span class="text-white small fw-bold">Paradigm Educational Network</span>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            
+            <div class="d-flex align-items-center mb-4">
+                <div class="p-2 rounded me-3 text-white fw-bold" style="background:var(--brand-navy)">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <h3 class="fw-bold m-0" style="color:var(--brand-navy)">Term Management</h3>
+            </div>
+
+            <div class="management-card mb-5">
+                <div class="card-header-custom">
+                    <i class="fa-solid fa-plus-circle me-2"></i> Create New Academic Term
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label">Term Name</label>
+                                <input type="text" name="name" class="form-control border-2" placeholder="e.g. 1st Term 2026" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" name="start_date" class="form-control border-2" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">End Date</label>
+                                <input type="date" name="end_date" class="form-control border-2" required>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-save w-100">
+                                    <i class="fa-solid fa-floppy-disk me-1"></i> Add Term
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3" style="color:var(--brand-navy)">Academic Calendar History</h5>
+            <div class="term-table-container">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Term Title</th>
+                            <th>Duration (Start → End)</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for term in terms %}
+                        <tr>
+                            <td class="ps-4">
+                                <span class="fw-bold text-dark">{{ term.name }}</span>
+                            </td>
+                            <td>
+                                <span class="small text-muted">
+                                    <i class="fa-regular fa-calendar me-1"></i> {{ term.start_date }} 
+                                    <i class="fa-solid fa-arrow-right date-range-icon"></i>
+                                    <i class="fa-regular fa-calendar-check me-1"></i> {{ term.end_date }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                {% if term.is_current %}
+                                <span class="badge badge-current px-3 py-2">
+                                    <i class="fa-solid fa-circle-check me-1"></i> CURRENT
+                                </span>
+                                {% else %}
+                                <span class="badge bg-light text-muted border px-3 py-2">INACTIVE</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <form method="post" action="{% url 'toggle_term_current' term.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm {% if term.is_current %}btn-toggle-active{% else %}btn-toggle-inactive{% endif %}">
+                                            {% if term.is_current %}
+                                                <i class="fa-solid fa-toggle-on me-1"></i> Active
+                                            {% else %}
+                                                <i class="fa-solid fa-toggle-off me-1"></i> Set Active
+                                            {% endif %}
+                                        </button>
+                                    </form>
+
+                                    <form method="post" action="{% url 'remove_term' term.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-delete"
+                                                onclick="return confirm('Deleting this term may affect associated marks. Proceed?')">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-calendar-xmark d-block mb-2 fs-2 opacity-25"></i>
+                                No academic terms defined yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="text-center mt-5 text-muted small pb-5">
+                © 2026 Paradigm Educational Network | Session Control Panel
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

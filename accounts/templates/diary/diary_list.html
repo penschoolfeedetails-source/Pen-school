@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diary Archive | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f8f9fc;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 12px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 30px;
+        }
+
+        /* Compact Filter Bar */
+        .filter-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .filter-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--brand-navy);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Archive Table */
+        .archive-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: var(--brand-navy);
+            color: white;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px;
+            border: none;
+        }
+
+        .class-name {
+            font-weight: 700;
+            color: var(--brand-navy);
+        }
+
+        .date-text {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Action Link */
+        .btn-download-pdf {
+            color: var(--brand-red);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-download-pdf:hover {
+            color: var(--brand-navy);
+            transform: translateX(3px);
+        }
+
+        .empty-state {
+            padding: 80px 20px;
+            text-align: center;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ dashboard_url }}" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+        </a>
+        <span class="text-white fw-bold"><i class="fa-solid fa-folder-tree me-2"></i> CENTRAL DIARY ARCHIVE</span>
+        <span class="text-white-50 small">Paradigm Educational Network</span>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    
+    <div class="mb-4">
+        <h2 class="fw-bold" style="color:var(--brand-navy)">History & Records</h2>
+        <p class="text-muted">Access and download archived daily diaries for all classes and past dates.</p>
+    </div>
+
+    <div class="filter-panel">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="filter-label">Academic Class</label>
+                <select name="class_id" class="form-select border-2">
+                    <option value="">All Classes</option>
+                    {% for c in school_classes %}
+                    <option value="{{ c.id }}" {% if c.selected %}selected{% endif %}>
+                        {{ c.name }} {{ c.section }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="filter-label">From Date</label>
+                <input type="date" name="date_from" class="form-control border-2" value="{{ date_from|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <label class="filter-label">To Date</label>
+                <input type="date" name="date_to" class="form-control border-2" value="{{ date_to|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100 fw-bold py-2" style="background: var(--brand-navy); border:none;">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i> Search Archive
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="archive-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Class / Section</th>
+                        <th class="text-center">Issued Date</th>
+                        <th class="pe-4 text-end">Archive Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in diary_summary %}
+                    <tr>
+                        <td class="ps-4 py-3">
+                            <div class="class-name"><i class="fa-solid fa-users-rectangle me-2 opacity-50"></i>{{ d.school_class }}</div>
+                        </td>
+                        <td class="text-center py-3">
+                            <span class="date-text"><i class="fa-regular fa-calendar me-2"></i>{{ d.date }}</span>
+                        </td>
+                        <td class="pe-4 text-end py-3">
+                            <a href="{{ d.download_url }}" class="btn-download-pdf">
+                                <i class="fa-solid fa-file-pdf me-2"></i>Download PDF
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-box-open fa-3x mb-3 opacity-25"></i>
+                                <h5 class="fw-bold">No Records Located</h5>
+                                <p class="small">Try expanding your date range or selecting "All Classes".</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="text-center text-muted small mt-5">
+        © 2026 Paradigm Educational Network | Secured Record Management
+    </p>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

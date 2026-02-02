@@ -1,0 +1,356 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEN Schools - Structured Homework Diary</title>
+    <style>
+        :root {
+            --primary-brown: #723E2A;
+            --secondary-blue: #1A305E;
+            --light-blue: #AED6F1;
+            --border-red: #8B0000;
+            --border-blue: #1A305E;
+            --bright-red: #681a1a;
+        }
+
+        @page {
+            size: auto;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #d1d1d1;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .diary-page {
+            width: 210mm;
+            background-color: white;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 10px solid var(--border-blue);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: table;
+            height: auto;
+        }
+
+        .inner-border {
+            border: 6px solid var(--border-red);
+            padding: 25px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .school-info {
+            text-align: center;
+            flex: 1;
+        }
+
+        .school-info h1 {
+            margin: 2px 0;
+            font-size: 40px;
+            color: var(--bright-red);
+            font-weight: 900;
+        }
+
+        .logo-placeholder {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            background: #fff;
+        }
+
+        .logo-placeholder img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 50%;
+        }
+
+        .diary-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .icon-box {
+            width: 55px;
+            height: 55px;
+            background: var(--light-blue);
+            border: 2px solid #000;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 11px;
+            line-height: 1.1;
+        }
+
+        .diary-text h2 {
+            font-size: 30px;
+            color: var(--bright-red);
+            margin: 0;
+        }
+
+        .grade-display {
+            font-size: 26px;
+            color: var(--bright-red);
+            font-weight: bold;
+            margin: 10px 0 20px 0;
+            text-align: center;
+        }
+
+        .diary-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .diary-table th {
+            background-color: var(--secondary-blue);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--secondary-blue);
+        }
+
+        .diary-table td {
+            border: 1px solid #ccc;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .subject-input,
+        .subject-display {
+            width: 100%;
+            padding: 15px 10px;
+            border: none;
+            font-weight: bold;
+            color: var(--secondary-blue);
+            background: transparent;
+            display: block;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .homework-input,
+        .homework-display {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            font-family: inherit;
+            resize: none;
+            background: transparent;
+            display: block;
+            box-sizing: border-box;
+            font-size: 14px;
+            min-height: 50px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--primary-brown);
+            padding-top: 10px;
+            border-top: 2px solid var(--border-red);
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-print {
+            background: var(--secondary-blue);
+            color: white;
+        }
+
+        .btn-image {
+            background: #e67e22;
+            color: white;
+        }
+
+        .btn-add {
+            background: #27ae60;
+            color: white;
+        }
+
+        .hide-on-export {
+            display: none !important;
+        }
+
+        @media print {
+
+            .controls,
+            .btn-add {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .diary-page {
+                box-shadow: none;
+                border: 10px solid var(--border-blue) !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="controls">
+        <form method="get" style="display:inline;">
+            <select name="class_id" onchange="this.form.submit()">
+                <option value="">-- Select Class --</option>
+                {% for c in school_classes %}
+                <option value="{{ c.id }}" {% if c.selected %}selected{% endif %}>{{c.name}} {{ c.section }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        <button class="btn btn-print" onclick="window.print()">Print PDF</button>
+        <button class="btn btn-image" onclick="saveAsImage()">Save as Image</button>
+    </div>
+
+    <form method="POST" id="diary-form">
+        {% csrf_token %}
+
+        <div class="diary-page" id="diary-container">
+            <div class="inner-border">
+                <div class="header">
+                    <div class="logo-placeholder"><img src="{% static 'logo/paradigm_logo.jpg' %}" crossorigin="anonymous">
+                    </div>
+                    <div class="school-info">
+                        <p><b>A PROJECT OF PARADIGM EDUCATIONAL NETWORK</b></p>
+                        <h1>PEN SCHOOLS</h1>
+                    </div>
+                    <div class="logo-placeholder"><img src="{% static 'logo/school_logo.jpg' %}" crossorigin="anonymous"></div>
+                </div>
+
+                <div class="diary-title-row">
+                    <div class="icon-box"><span>HOME</span><span>WORK</span></div>
+                    <div class="diary-text">
+                        <h2>HOMEWORK DIARY</h2>
+                    </div>
+                </div>
+
+                <div class="grade-display">
+                    GRADE {% if selected_class %}{{ selected_class.section }}{% else %}-{% endif %}
+                </div>
+
+                <table class="diary-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Subject</th>
+                            <th style="width: 75%;">Homework Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %}
+                        <tr>
+                            <td class="subject-cell">
+                                <input type="text" class="subject-input" readonly value="{{ subject.name }}">
+                            </td>
+                            <td class="homework-cell">
+                                <textarea name="content_{{ subject.id }}" class="homework-input"
+                                    rows="2">{{ subject.content }}</textarea>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="controls action-area" style="margin-top:20px;">
+                    <button type="submit" class="btn btn-add">Save / Update Diary</button>
+                </div>
+
+                <div class="footer">
+                    <div>📞 0330-1000081</div>
+                    <div>☎️ 055-3730081</div>
+                    <div>✉️ penschoolcroadcampus@gmail.com</div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function saveAsImage() {
+            const container = document.getElementById('diary-container');
+            const actionArea = document.querySelector('.action-area');
+
+            actionArea.classList.add('hide-on-export');
+
+            const inputs = container.querySelectorAll('input:not([type="hidden"]), textarea');
+            const replacements = [];
+
+            inputs.forEach(el => {
+                const div = document.createElement('div');
+                div.innerText = el.value;
+                div.className = el.className.replace('-input', '-display');
+                div.style.whiteSpace = 'pre-wrap';
+                el.style.display = 'none';
+                el.parentNode.insertBefore(div, el);
+                replacements.push({ div, el });
+            });
+
+            html2canvas(container, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: "#ffffff",
+                // This specifically tells the tool to ignore hidden inputs like CSRF tokens
+                ignoreElements: (node) => node.type === 'hidden'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'PEN-Diary.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                actionArea.classList.remove('hide-on-export');
+                replacements.forEach(item => {
+                    item.div.remove();
+                    item.el.style.display = 'block';
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marks Entry | Paradigm Network</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #002d72;
+            --primary-red: #d50032;
+            --bg-light: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Inter', sans-serif;
+            padding-bottom: 100px;
+        }
+
+        /* Top Info Bar */
+        .info-header {
+            background: white;
+            border-bottom: 4px solid var(--primary-blue);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .subject-badge {
+            background: var(--primary-red);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Table Styling */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+        }
+
+        .table thead {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .table thead th {
+            padding: 15px;
+            font-weight: 600;
+            border: none;
+        }
+
+        /* Marks Input Styling */
+        .marks-input {
+            width: 100px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 700;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .marks-input:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 45, 114, 0.1);
+            background-color: #f0f4f8;
+        }
+
+        .total-marks-card {
+            background: #fff5f7;
+            border: 1px solid #ffcfd9;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .roll-no-cell {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        /* Floating Save Bar */
+        .save-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1030;
+        }
+
+        .btn-save {
+            background: var(--primary-blue);
+            color: white;
+            padding: 12px 60px;
+            border-radius: 10px;
+            font-weight: 800;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-save:hover {
+            background: var(--primary-red);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 576px) {
+            .table-container {
+                font-size: 0.85rem;
+            }
+
+            .marks-input {
+                width: 70px;
+            }
+
+            .btn-save {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <header class="info-header">
+            <div class="container d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                    <h4 class="fw-bold mb-1 text-dark">{{ subject.name }}</h4>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="subject-badge">{{ term.name }}</span>
+                        <span class="text-muted small">| Paradigm Educational Network</span>
+                    </div>
+                </div>
+
+                <div class="total-marks-card mt-3 mt-md-0">
+                    <label class="small fw-bold text-uppercase text-danger d-block mb-1">Total Marks</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-0"><i
+                                class="fa-solid fa-star text-warning"></i></span>
+                        <input type="number" id="total_marks" name="total_marks" class="form-control fw-bold border-0"
+                            style="width: 80px; font-size: 1.2rem;" value="{{ total_marks|default_if_none:100 }}"
+                            required>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container my-4">
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Roll No</th>
+                                <th>Student Name</th>
+                                <th class="text-center">Obtained Marks</th>
+                                <th class="text-center d-none d-md-table-cell">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student, mark in students_with_marks %}
+                            <tr>
+                                <td class="text-center roll-no-cell">{{ student.roll_no }}</td>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ student.name }}</div>
+                                    <small class="text-muted">Primary Department</small>
+                                </td>
+                                <td class="text-center">
+                                    <input type="number" name="obtained_{{ student.id }}" class="marks-input"
+                                        value="{{ mark.obtained_marks|default_if_none:'' }}"
+                                        max="{{ total_marks|default_if_none:100 }}" placeholder="--" required>
+                                </td>
+                                <td class="text-center d-none d-md-table-cell">
+                                    <span class="badge rounded-pill bg-light text-muted border">Pending</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="save-bar">
+            <div class="container d-flex justify-content-between align-items-center">
+                <button type="button" onclick="history.back()"
+                    class="btn btn-link text-muted fw-bold text-decoration-none">
+                    <i class="fa-solid fa-xmark me-2"></i>Cancel
+                </button>
+                <button type="submit" class="btn btn-save shadow-lg">
+                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>Save All Marks
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        const totalInput = document.getElementById('total_marks');
+
+        // Dynamic validation update
+        totalInput.addEventListener('input', function () {
+            const maxVal = this.value;
+            document.querySelectorAll('.marks-input').forEach(input => {
+                input.max = maxVal;
+                // Immediate visual feedback if current value exceeds new total
+                if (parseInt(input.value) > parseInt(maxVal)) {
+                    input.style.borderColor = 'var(--primary-red)';
+                } else {
+                    input.style.borderColor = '#e1e8ed';
+                }
+            });
+        });
+
+        // Add visual feedback on input
+        document.querySelectorAll('.marks-input').forEach(input => {
+            input.addEventListener('input', function () {
+                if (this.value !== "") {
+                    this.style.backgroundColor = "#f0fff4"; // Light green success look
+                    this.style.borderColor = "#2ecc71";
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

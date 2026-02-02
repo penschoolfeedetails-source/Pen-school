@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints: {{ student.name }} | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f4f7f6;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', sans-serif;
+            color: #444;
+        }
+
+        .header-section {
+            background: white;
+            padding: 20px 0;
+            border-bottom: 3px solid var(--brand-red);
+            margin-bottom: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Complaint Card Styling */
+        .complaint-card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .complaint-card:hover {
+            transform: scale(1.01);
+        }
+
+        .complaint-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background-color: var(--brand-navy);
+        }
+
+        .complaint-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fafafa;
+        }
+
+        .complaint-body {
+            padding: 20px;
+        }
+
+        .teacher-badge {
+            background-color: #e9ecef;
+            color: var(--brand-navy);
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .date-text {
+            color: #888;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Subject List Styling */
+        .subject-remark-item {
+            background: #fff;
+            border-left: 3px solid var(--brand-red);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .subject-name {
+            color: var(--brand-navy);
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .remarks-text {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .btn-back {
+            color: var(--brand-navy);
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            color: var(--brand-red);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-section">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold mt-2" style="color: var(--brand-navy);">
+                Complaints: <span style="color: var(--brand-red);">{{ student.name }}</span>
+            </h2>
+        </div>
+        <div class="text-end d-none d-md-block">
+            <span class="badge bg-dark">Class: {{ student.class_name|default:"General" }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            
+            {% for complaint in complaints %}
+            <div class="complaint-card">
+                <div class="complaint-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="date-text">
+                            <i class="fa-regular fa-calendar-check me-1"></i> {{ complaint.date }}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="teacher-badge">
+                            <i class="fa-solid fa-chalkboard-user me-1"></i> Reported by: {{ complaint.teacher.get_full_name }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="complaint-body">
+                    <h6 class="text-uppercase fw-bold small text-muted mb-3">Subject Wise Remarks</h6>
+                    <div class="row g-2">
+                        {% for s in complaint.subjects.all %}
+                        <div class="col-12">
+                            <div class="subject-remark-item">
+                                <span class="subject-name">{{ s.subject.name }}</span>
+                                <span class="remarks-text">{{ s.remarks }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state shadow-sm">
+                <i class="fa-solid fa-clipboard-check fa-4x mb-3 text-muted opacity-25"></i>
+                <h4 class="fw-bold text-muted">Clean Record</h4>
+                <p class="text-muted">No formal complaints have been registered for this student.</p>
+            </div>
+            {% endfor %}
+
+            <footer class="text-center py-5 text-muted small">
+                Paradigm Educational Network &copy; 2026
+            </footer>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

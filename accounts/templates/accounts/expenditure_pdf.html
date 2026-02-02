@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expenditure Report | PEN</title>
+    <style>
+        @page {
+            size: a4;
+            margin: 1.5cm;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #333;
+            line-height: 1.4;
+        }
+        .header-table {
+            width: 100%;
+            border-bottom: 2px solid #1A305E;
+            margin-bottom: 20px;
+        }
+        .school-name {
+            color: #1A305E;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .report-title {
+            color: #d50032;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        /* Data Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background-color: #f4f6f9;
+            border: 1px solid #999;
+            padding: 8px;
+            font-weight: bold;
+            color: #1A305E;
+        }
+        .data-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        /* FIXED TOTAL TABLE - Using a separate table to prevent overlap */
+        .total-container {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: -1px; /* Align perfectly with table above */
+        }
+        .total-box {
+            background-color: #1A305E;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 12px 10px;
+            border: 1px solid #1A305E;
+            font-size: 12px;
+        }
+
+        .signature-table {
+            width: 100%;
+            margin-top: 60px;
+        }
+        .sig-line {
+            border-top: 1px solid #333;
+            padding-top: 5px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+    </style>
+</head>
+<body>
+
+    <table class="header-table">
+        <tr>
+            <td width="70%" style="padding-bottom: 10px;">
+                <div class="school-name">Paradigm Educational Network</div>
+                <div style="font-size: 10px; color: #555;">Central Accounts Department | Meezan Group of Colleges</div>
+                <div style="font-size: 10px;">Period: <strong>{{ from_date|default:"N/A" }}</strong> to <strong>{{ to_date|default:"N/A" }}</strong></div>
+            </td>
+            <td width="30%" class="text-right" style="padding-bottom: 10px; vertical-align: middle;">
+                <div class="report-title">EXPENDITURE REPORT</div>
+                <div style="font-size: 9px; color: #666;">Ref: PEN-EXP-{% now "Ymd" %}</div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th width="50%">Item / Description</th>
+                <th width="25%" class="text-center">Date</th>
+                <th width="25%" class="text-right">Amount (PKR)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for exp in expenditures %}
+            <tr>
+                <td>{{ exp.name }}</td>
+                <td class="text-center">{{ exp.time|date:"Y-m-d" }}</td>
+                <td class="text-right">{{ exp.expense|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center" style="padding: 20px;">No records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="total-container">
+        <tr>
+            <td width="75%" class="total-box text-right">GRAND TOTAL</td>
+            <td width="25%" class="total-box text-right">Rs {{ total|floatformat:2 }}</td>
+        </tr>
+    </table>
+
+    <table class="signature-table">
+        <tr>
+            <td width="5%">&nbsp;</td>
+            <td width="30%">
+                <div class="sig-line">Audit Officer</div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

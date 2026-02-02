@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Fee | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f8f9fc;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* Navigation */
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 10px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 30px;
+        }
+
+        .btn-back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Profile Header */
+        .student-profile-header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Section Cards */
+        .content-card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+
+        .card-header-navy {
+            background: var(--brand-navy);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Form Styling */
+        .fee-form-wrapper {
+            padding: 25px;
+        }
+
+        .fee-form-wrapper p {
+            margin-bottom: 15px;
+        }
+
+        .fee-form-wrapper input, .fee-form-wrapper select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .btn-submit-fee {
+            background: var(--brand-red);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            text-transform: uppercase;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        .btn-submit-fee:hover {
+            background: #b3002a;
+            transform: translateY(-2px);
+        }
+
+        /* Table Styling */
+        .table thead th {
+            background-color: #f1f4f9;
+            color: var(--brand-navy);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 12px;
+        }
+
+        .status-paid { color: #198754; font-weight: 800; }
+        .status-unpaid { color: #dc3545; font-weight: 800; }
+
+        .total-fee-badge {
+            background: rgba(213, 0, 50, 0.1);
+            color: var(--brand-red);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <a href="{% url 'fee_dashboard' %}" class="btn-back-link me-3">
+                <i class="fa-solid fa-arrow-left me-1"></i> FEE DASHBOARD
+            </a>
+            <a href="{{ dashboard_url }}" class="btn-back-link">
+                <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+            </a>
+        </div>
+        <span class="text-white small fw-bold">Paradigm Educational Network</span>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    
+    <div class="student-profile-header">
+        <div>
+            <h6 class="text-muted small text-uppercase fw-bold mb-1">Student Billing Profile</h6>
+            <h3 class="fw-bold m-0" style="color:var(--brand-navy)">
+                {{ student.name }} 
+                <span class="text-muted fw-normal ms-2" style="font-size: 0.9rem;">f/o {{ student.father_name }}</span>
+            </h3>
+        </div>
+        <div class="text-end">
+            <span class="total-fee-badge">
+                <i class="fa-solid fa-money-bill-wave me-2"></i>Base Fee: {{ student.total_fee }}
+            </span>
+            <div class="mt-2">
+                <a href="{% url 'get_siblings' student.id %}" class="btn btn-sm btn-outline-dark fw-bold">
+                    <i class="fa-solid fa-people-roof me-1"></i> SHOW SIBLINGS
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="content-card">
+                <div class="card-header-navy">
+                    <span><i class="fa-solid fa-plus-circle me-2"></i> New Transaction</span>
+                </div>
+                <div class="fee-form-wrapper">
+                    <form method="post" enctype="multipart/form-data" id="feeForm">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn-submit-fee">
+                            <i class="fa-solid fa-check-double me-2"></i> Confirm Payment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="content-card">
+                <div class="card-header-navy" style="background-color: #4a5568;">
+                    <span><i class="fa-solid fa-clock-rotate-left me-2"></i> Payment History Ledger</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Cycle</th>
+                                <th class="text-center">Amount</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Method</th>
+                                <th class="pe-4 text-end">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fee in student.fees.all %}
+                            <tr>
+                                <td class="ps-4 fw-bold text-navy">
+                                    {{ fee.get_month_display }} {{ fee.year }}
+                                </td>
+                                <td class="text-center fw-bold">{{ fee.amount_paid }}</td>
+                                <td class="text-center">
+                                    <span class="status-{{ fee.status|lower }}">
+                                        <i class="fa-solid fa-circle small me-1"></i> {{ fee.status|title }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border">{{ fee.payment_method|title }}</span>
+                                </td>
+                                <td class="pe-4 text-end text-muted small">
+                                    {{ fee.payment_date }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="fa-solid fa-receipt fa-2x d-block mb-2 opacity-25"></i>
+                                    No transaction history found for this student.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center text-muted small mt-5">
+        © 2026 Paradigm Educational Network | Financial Record Management
+    </p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Existing Fee Warning Logic
+    {% if existing_fee %}
+    document.getElementById('feeForm').addEventListener('submit', function (e) {
+        var monthName = "{{ existing_fee.get_month_display }}";
+        var year = "{{ existing_fee.year }}";
+        var confirmUpdate = confirm(
+            "ALERT: A fee record already exists for " + monthName + " " + year + ".\n\n" +
+            "Continuing will OVERWRITE the existing record. Do you want to proceed?"
+        );
+        if (!confirmUpdate) {
+            e.preventDefault();
+        }
+    });
+    {% endif %}
+</script>
+
+</body>
+</html>

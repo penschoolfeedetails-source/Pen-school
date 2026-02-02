@@ -1,0 +1,19 @@
+# Virtual environment
+venv/
+
+# Environment variables
+.env
+
+# SQLite DB
+db.sqlite3
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Static & media
+staticfiles/
+media/
+
+# OS files
+.DS_Store

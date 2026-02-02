@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Class | Paradigm Network</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-blue: #002d72;
+            --primary-red: #d50032;
+            --bg-light: #f0f2f5;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding-bottom: 120px;
+        }
+
+        .glass-header {
+            background: #fff;
+            padding: 1.5rem 0;
+            border-bottom: 4px solid var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .brand-name {
+            font-weight: 900;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.4rem;
+        }
+
+        /* The Card Styling */
+        .class-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 2px solid #e1e8ed;
+            padding: 0;
+            /* Remove padding to allow header color */
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* Top colored part of the card showing the Section/Class */
+        .card-class-header {
+            background: #f8f9fa;
+            padding: 25px 15px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .class-number {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary-blue);
+            display: block;
+            line-height: 1;
+        }
+
+        .class-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        .card-body-content {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .class-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2d3436;
+            margin: 0;
+        }
+
+        .wing-badge {
+            font-size: 0.65rem;
+            background: #eee;
+            color: #666;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        /* Hover & Radio Logic */
+        .class-radio {
+            display: none;
+        }
+
+        .class-radio:checked+.class-card {
+            border-color: var(--primary-red);
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(213, 0, 50, 0.15);
+        }
+
+        .class-radio:checked+.class-card .card-class-header {
+            background: var(--primary-red);
+        }
+
+        .class-radio:checked+.class-card .class-number,
+        .class-radio:checked+.class-card .class-label {
+            color: white;
+        }
+
+        /* Selection Indicator */
+        .selection-check {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .class-radio:checked+.class-card .selection-check {
+            opacity: 1;
+        }
+
+        /* Action Bar */
+        .bottom-action-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            padding: 1.5rem;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .btn-next {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: 0.3s;
+        }
+
+        .btn-next:hover {
+            background: var(--primary-red);
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="glass-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="{{ dashboard_url }}" class="btn-back-link">
+                <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+            </a>
+            <div class="brand-name">Paradigm <span class="text-danger">Network</span></div>
+            <div class="d-none d-md-block text-muted small fw-bold">Step 1: Choose Classroom</div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="fw-bold">Welcome, Teacher</h3>
+                <p class="text-muted">Select a class to manage student marks and performance.</p>
+            </div>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-4">
+                {% for class in classes %}
+                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <label class="w-100 mb-0">
+                        <input type="radio" name="class_id" value="{{ class.id }}" class="class-radio" required>
+                        <div class="class-card">
+                            <div class="selection-check"><i class="fa-solid fa-circle-check"></i></div>
+
+                            <div class="card-class-header">
+                                <span class="class-label">Grade / Section</span>
+                                <span class="class-number">{{ class.section }}</span>
+                            </div>
+
+                            <div class="card-body-content">
+                                <p class="class-title">{{ class.name }}</p>
+                                <span class="wing-badge">Primary Wing</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="fa-solid fa-folder-open fa-3x text-muted mb-3"></i>
+                    <p class="h5 text-muted">No classes assigned yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="bottom-action-bar">
+                <div class="container d-flex justify-content-between align-items-center">
+                    <a href="{% url 'teacher_dashboard' %}" class="text-muted text-decoration-none fw-bold">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Dashboard
+                    </a>
+                    <button type="submit" class="btn btn-next shadow">
+                        Continue <i class="fa-solid fa-chevron-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

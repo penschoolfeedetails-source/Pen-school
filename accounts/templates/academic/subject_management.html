@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Management | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f8f9fc;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navigation Styling */
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 10px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 30px;
+        }
+        
+        .btn-back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+        
+        .btn-back-link:hover {
+            color: #ccc;
+            opacity: 0.8;
+        }
+
+        /* Form & Cards Styling */
+        .management-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            background: #fff;
+        }
+
+        .form-header {
+            background: var(--brand-navy);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: 600;
+        }
+
+        .btn-add {
+            background-color: var(--brand-red);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-add:hover {
+            background-color: #b3002a;
+            color: white;
+        }
+
+        .class-card {
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            background: #fff;
+        }
+
+        .class-title-bar {
+            background: #f1f4f9;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e6ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .class-label {
+            color: var(--brand-navy);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .subject-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid #f8f9fc;
+        }
+
+        .btn-remove {
+            color: #dc3545;
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        .btn-remove:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .empty-icon {
+            opacity: 0.3;
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ dashboard_url }}" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+        </a>
+        <span class="text-white small fw-bold">Paradigm Educational Network</span>
+    </div>
+</nav>
+
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            
+            <div class="d-flex align-items-center mb-4">
+                <div class="p-2 rounded me-3 text-white fw-bold" style="background:var(--brand-navy)">PEN</div>
+                <h3 class="fw-bold m-0" style="color:var(--brand-navy)">📘 Subject Management</h3>
+            </div>
+
+            <div class="management-card mb-5">
+                <div class="form-header">
+                    <i class="fa-solid fa-plus-circle me-2"></i> Register New Subject
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-muted">ASSIGN TO CLASS</label>
+                                <select name="school_class" class="form-select border-2" required>
+                                    <option value="">Select Class</option>
+                                    {% for cls in classes %}
+                                    <option value="{{ cls.id }}">{{ cls }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold small text-muted">SUBJECT NAME</label>
+                                <input type="text" name="name" class="form-control border-2" placeholder="e.g. Mathematics" required>
+                            </div>
+
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-add w-100 py-2">
+                                    <i class="fa-solid fa-save me-2"></i> Add Subject
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold m-0" style="color:var(--brand-navy)">Currently Offered Subjects</h5>
+                <a href="{% url 'principal_dashboard' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa-solid fa-house me-1"></i> Home
+                </a>
+            </div>
+            
+            {% regroup subjects by school_class as class_list %}
+
+            {% for group in class_list %}
+            <div class="class-card shadow-sm">
+                <div class="class-title-bar">
+                    <span class="class-label">
+                        <i class="fa-solid fa-graduation-cap me-2 text-muted"></i>
+                        Class: {{ group.grouper }}
+                    </span>
+                    <span class="badge rounded-pill bg-white text-navy border" style="color:var(--brand-navy)">
+                        {{ group.list|length }} Subjects
+                    </span>
+                </div>
+
+                <div class="list-group list-group-flush">
+                    {% for subject in group.list %}
+                    <div class="subject-item d-flex justify-content-between align-items-center">
+                        <span class="subject-name">
+                            <i class="fa-solid fa-book me-3 text-muted" style="font-size: 0.8rem;"></i>
+                            {{ subject.name }}
+                        </span>
+
+                        {% if is_principal %}
+                        <a href="{% url 'remove_subject' subject.id %}" 
+                           class="btn-remove"
+                           onclick="return confirm('Are you sure you want to remove {{ subject.name }} from {{ group.grouper }}?')">
+                            <i class="fa-solid fa-trash-can me-1"></i> REMOVE
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5 management-card">
+                <i class="fa-solid fa-box-open empty-icon d-block"></i>
+                <p class="text-muted fw-bold">No subjects have been added to the system yet.</p>
+            </div>
+            {% endfor %}
+
+            <p class="text-center mt-5 text-muted small pb-4">
+                © 2026 Paradigm Educational Network | Subject Curriculum Control
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

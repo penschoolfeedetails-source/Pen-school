@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Management | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f8f9fc;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 10px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 30px;
+        }
+        
+        .btn-back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .search-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            border: 2px solid #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 8px 0 0 8px;
+            font-weight: 500;
+        }
+
+        .search-input:focus {
+            border-color: var(--brand-navy);
+            box-shadow: none;
+        }
+
+        .search-btn {
+            background: var(--brand-navy);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 0 8px 8px 0;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: var(--brand-navy);
+            color: white;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 15px;
+            border: none;
+        }
+
+        .student-name {
+            font-weight: 700;
+            color: var(--brand-navy);
+        }
+
+        .fee-badge {
+            font-weight: 800;
+            color: var(--brand-red);
+            background: rgba(213, 0, 50, 0.05);
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+
+        .btn-submit-fee {
+            background-color: #198754;
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .btn-submit-fee:hover {
+            background-color: #146c43;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(25, 135, 84, 0.2);
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            color: #a0aec0;
+            text-transform: uppercase;
+            font-weight: 800;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ dashboard_url }}" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+        </a>
+        <span class="text-white small fw-bold">Paradigm Educational Network</span>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    
+    <div class="mb-4">
+        <h3 class="fw-bold" style="color:var(--brand-navy)">Fee Management</h3>
+        <p class="text-muted">Search for a student to record payments or update financial records.</p>
+    </div>
+
+    <div class="search-card">
+    <form method="get" class="row g-2">
+        <div class="col-md-2">
+            <input type="text" name="name" class="form-control" placeholder="Student Name" value="{{ filters.name }}">
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="roll_no" class="form-control" placeholder="Roll No" value="{{ filters.roll_no }}">
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="phone" class="form-control" placeholder="Phone" value="{{ filters.phone }}">
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="cnic" class="form-control" placeholder="CNIC" value="{{ filters.cnic }}">
+        </div>
+        <div class="col-md-2">
+            <select name="school_class" class="form-control">
+                <option value="">All Classes</option>
+                {% for cls in classes %}
+                    <option value="{{ cls.id }}" {% if filters.school_class == cls.id %}selected{% endif %}>
+                        {{ cls }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fa-solid fa-magnifying-glass me-1"></i> Filter
+            </button>
+        </div>
+    </form>
+</div>
+
+
+    <!-- Student Table -->
+    <div class="student-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Student Identity</th>
+                        <th>Parentage</th>
+                        <th>Contact Details</th>
+                        <th>Class / Section</th>
+                        <th class="text-center">Total Assigned Fee</th>
+                        <th class="text-end pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="student-name">{{ student.name }}</div>
+                            <small class="text-muted"><i class="fa-solid fa-id-card me-1"></i> {{ student.cnic }}</small>
+                        </td>
+                        <td>
+                            <span class="info-label">Father Name</span>
+                            <div class="small fw-bold text-dark">{{ student.father_name }}</div>
+                        </td>
+                        <td>
+                            <span class="info-label">Phone</span>
+                            <div class="small fw-bold text-dark">{{ student.phone }}</div>
+                        </td>
+                        <td>
+                            <span class="info-label">Class / Section</span>
+                            <div class="small fw-bold text-dark">{{ student.school_class }}</div>
+                        </td>
+                        <td class="text-center">
+                            <span class="fee-badge">{{ student.total_fee }}</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'submit_fee' student.id %}" class="btn-submit-fee">
+                                <i class="fa-solid fa-money-bill-transfer me-1"></i> Submit Fee
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted mb-2"><i class="fa-solid fa-user-slash fa-3x opacity-25"></i></div>
+                            <h5 class="text-muted">No students found.</h5>
+                            <p class="small text-muted">Try using a full name or complete CNIC number.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="text-center mt-5 text-muted small">
+        © 2026 Paradigm Educational Network | Secured Fee Collection Portal
+    </p>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

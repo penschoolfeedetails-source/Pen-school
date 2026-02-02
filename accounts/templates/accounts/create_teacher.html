@@ -1,0 +1,204 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Teacher | PEN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-navy: #1A305E;
+            --brand-red: #d50032;
+            --bg-gray: #f0f2f5;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* Navigation Styling */
+        .top-nav {
+            background: var(--brand-navy);
+            padding: 10px 0;
+            border-bottom: 4px solid var(--brand-red);
+            margin-bottom: 40px;
+        }
+        
+        .btn-back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        /* Form Container */
+        .form-card {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+
+        .form-header {
+            background: var(--brand-navy);
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .section-title {
+            color: var(--brand-navy);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        /* Customizing Django form elements */
+        .form-group-custom {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 6px;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--brand-navy);
+            box-shadow: 0 0 0 3px rgba(26, 48, 94, 0.1);
+        }
+
+        .btn-submit {
+            background-color: var(--brand-red);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 700;
+            border-radius: 8px;
+            width: 100%;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit:hover {
+            background-color: #b3002a;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(213, 0, 50, 0.3);
+        }
+
+        .help-text {
+            font-size: 0.75rem;
+            color: #718096;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ dashboard_url }}" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+        </a>
+        <span class="text-white small fw-bold">Paradigm Educational Network</span>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <a href="{{ dashboard_url }}" class="btn-back-link">
+                <i class="fa-solid fa-arrow-left me-2"></i> DASHBOARD
+            </a>
+            <div class="form-card">
+                <div class="form-header">
+                    <h4 class="m-0"><i class="fa-solid fa-user-plus me-2"></i> Onboard New Teacher</h4>
+                    <p class="small m-0 opacity-75">Fill in the details below to create a staff account.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="section-title">
+                            <i class="fa-solid fa-lock me-2 text-danger"></i> Account Credentials
+                        </div>
+                        <div class="row">
+                            {% for field in user_form %}
+                            <div class="col-md-6 form-group-custom">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <div class="help-text">{{ field.help_text|safe }}</div>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="text-danger small mt-1 fw-bold">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="section-title mt-4">
+                            <i class="fa-solid fa-address-card me-2 text-danger"></i> Professional Profile
+                        </div>
+                        <div class="row">
+                            {% for field in profile_form %}
+                            <div class="col-md-6 form-group-custom">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <div class="help-text">{{ field.help_text|safe }}</div>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="text-danger small mt-1 fw-bold">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-submit py-3">
+                                    <i class="fa-solid fa-check-circle me-2"></i> Register & Create Account
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <p class="text-center text-muted small pb-5">
+                © 2026 Paradigm Educational Network | Personnel Management System
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

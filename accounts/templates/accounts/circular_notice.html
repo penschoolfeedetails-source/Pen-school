@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEN Schools Notice Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Playfair+Display:wght@700&family=Roboto:wght@400;700&display=swap');
+
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Roboto', sans-serif;
+            padding: 40px;
+        }
+
+        /* Notice Card Design */
+        #capture-area {
+            width: 800px;
+            margin: 0 auto;
+        }
+
+        .notice-card {
+            width: 800px;
+            /* Changed from height: 500px to allow expansion */
+            min-height: 550px;
+            background-color: #a31d1d;
+            border: 14px solid #1a305e;
+            padding: 20px 45px;
+            box-sizing: border-box;
+            position: relative;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            /* Important: Flex layout to push footer down */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Improved Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .logo-circle {
+            width: 110px;
+            height: 110px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid #fff;
+            flex-shrink: 0;
+        }
+
+        .logo-circle img {
+            /* Fixes the squared appearance */
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .title-area {
+            flex-grow: 1;
+            text-align: left;
+            padding-left: 25px;
+        }
+
+        .sub-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 0px;
+        }
+
+        .main-title {
+            font-size: 46px;
+            font-weight: 900;
+            margin: -5px 0;
+        }
+
+        .campus-name {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #ffffff;
+            padding-left: 180px;
+        }
+
+        /* Message Area */
+        .salutation {
+            font-family: 'Playfair Display', serif;
+            font-size: 29px;
+            margin-top: 10px;
+        }
+
+        .message-body {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-top: 15px;
+            /* Removed overflow: hidden and fixed height */
+            flex-grow: 1;
+            padding-bottom: 60px;
+            /* Space for the footer */
+        }
+
+        /* Footer Section - Adjusted for dynamic height */
+        .footer {
+            margin-top: 20px;
+            align-self: flex-end;
+            /* Pushes to the right */
+            text-align: right;
+        }
+
+        .designation {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            width: 350px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+
+        #generate-btn {
+            background: #1a305e;
+            color: white;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;      /* Space between input and button */
+            width: 100%;    /* Makes the row full width */
+            max-width: 800px; /* Optional: prevents it from getting too wide on huge screens */
+            margin: 0 auto;
+        }
+
+        #circular-input {
+            flex-grow: 1;       /* This makes it fill the 800px width of the row */
+            padding: 35px 20px;      /* This makes the box taller and roomier */
+            font-size: 1.2rem;  /* Makes the typing text larger */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        #generate-btn {
+            padding: 12px 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="capture-area">
+        <div class="notice-card">
+            <div class="header">
+                <div class="logo-circle">
+                    <img src="{% static 'logo/paradigm_logo.jpg' %}" alt="Logo 1">
+                </div>
+                <div class="title-area">
+                    <p class="sub-title">A Project of Paradigm Educational Network</p>
+                    <h1 class="main-title">PEN SCHOOLS</h1>
+                    <div class="campus-name">DC Road Campus</div>
+                </div>
+                <div class="logo-circle">
+                    <img src="{% static 'logo/school_logo.jpg' %}" alt="Logo 2">
+                </div>
+            </div>
+
+            <div class="salutation">Dear Parents,</div>
+            <div class="message-body" id="auto-message">
+                Please enter a topic below to generate your official professional school notice.
+                The card will now automatically grow if the message is longer!
+            </div>
+
+            <div class="footer">
+                <div class="closing">Regards,</div>
+                <div class="designation">Principal</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="input-row">
+            <input type="text" id="circular-input" placeholder="Topic: e.g. Parent Teacher Meeting">
+            <button id="generate-btn">Generate Circular</button>
+        </div>
+        <div class="input-row">
+            <button onclick="downloadImage('png')" class="download-btn">Download PNG</button>
+            <button onclick="downloadImage('jpg')" class="download-btn">Download JPG</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("generate-btn").addEventListener("click", async () => {
+            const btn = document.getElementById("generate-btn");
+            const inputField = document.getElementById("circular-input");
+            const displayArea = document.getElementById("auto-message");
+
+            const text = inputField.value.trim();
+            if (!text) return alert("Enter a topic first!");
+
+            btn.disabled = true; btn.innerText = "Generating...";
+            displayArea.innerText = "Writing professional circular...";
+
+            try {
+                const response = await fetch("/generate-circular/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text })
+                });
+                const data = await response.json();
+                displayArea.innerText = data.message || data.error;
+            } catch (err) {
+                alert("Server Error");
+            } finally {
+                btn.disabled = false; btn.innerText = "Generate Circular";
+            }
+        });
+
+        function downloadImage(format) {
+            const element = document.getElementById("capture-area");
+            // Quality fix: Ensure the canvas captures the full height
+            html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                scrollY: -window.scrollY
+            }).then(canvas => {
+                const link = document.createElement("a");
+                link.download = `PEN_Notice.${format}`;
+                link.href = canvas.toDataURL(format === 'jpg' ? "image/jpeg" : "image/png");
+                link.click();
+            });
+        }
+    </script>
+</body>
+
+</html>
